@@ -24,7 +24,7 @@ class IntegrationDbWriterConsumer(private val consumer: KafkaConsumer<String, UU
 
             for (record in records) {
                 val apiCallId = record.value()
-                println("Received syncId $apiCallId, processing")
+                println("Received appCallId $apiCallId, processing")
 
                 val apiCall = ApiCallDao.find(apiCallId) ?: throw Exception("This record should exist")
                 apiCall.fileLocation ?: throw Exception("File path is missing")
@@ -53,6 +53,8 @@ class IntegrationDbWriterConsumer(private val consumer: KafkaConsumer<String, UU
                     IntegrationSyncDao.updateComplete(session, apiCall.syncId, totalCount)
                     DataLoadDao.updateComplete(session, dataLoadId)
                 }
+
+                println("Successfully processed appCallId $apiCallId")
             }
         }
     }
