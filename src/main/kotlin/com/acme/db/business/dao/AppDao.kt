@@ -22,9 +22,12 @@ object AppDao {
     fun getInstallationListByOrgId(orgId: UUID, appId: UUID): List<App> {
         return withSession { session ->
             session.createQuery(
-                "SELECT oa.app FROM OrgApp oa WHERE oa.org.id = :orgId AND oa.app.id = :appId",
+                "SELECT app FROM App app, OrgApp orgApp WHERE app.id = orgApp.appId AND orgApp.orgId = :orgId AND orgApp.appId = :appId",
                 App::class.java
-            ).setParameter("orgId", orgId).setParameter("appId", appId).list()
+            )
+                .setParameter("orgId", orgId)
+                .setParameter("appId", appId)
+                .list()
         }
     }
 }
