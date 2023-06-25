@@ -9,6 +9,13 @@ class IntercomTicketingSystemApi : TicketingSystemApi {
     override fun callApi(): Response {
         // In reality this would make a http request and return the actual HTTP response
         // the underlying entity would be InputStream
+
+        // It appears that they have a offset id for pagination
+        // GET https://api.intercom.io/conversations?per_page=20&starting_after=abc123
+        //
+        // In order to make this idempotent, we would likely need to query for last id and then load
+        // all conversations, this would allow the api to save the data that comes after what we already have.
+        // starting_after = last id saved in the DB
         return FakeResponse()
     }
 }

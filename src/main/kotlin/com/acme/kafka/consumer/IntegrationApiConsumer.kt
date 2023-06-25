@@ -54,8 +54,6 @@ class IntegrationApiConsumer(private val consumer: KafkaConsumer<String, UUID>, 
     }
 
     override fun run() {
-
-
         while (true) {
             val records = consumer.poll(Duration.ofMillis(100))
 
