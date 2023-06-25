@@ -1,10 +1,7 @@
 package com.acme.integration.ticketing.intercom
 
 import com.acme.integration.ticketing.TicketingSystemApi
-import org.apache.commons.io.IOUtils
-import java.io.InputStream
 import java.net.URI
-import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.ws.rs.core.*
 
