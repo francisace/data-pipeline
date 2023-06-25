@@ -1,0 +1,45 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.8.21'
+    id 'application'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+
+    // Embedded Kafka
+    implementation 'net.mguenther.kafka:kafka-junit:2.1.0'
+
+    // Hibernate
+    implementation 'org.hibernate:hibernate-core:5.6.2.Final'
+
+    implementation 'com.google.inject:guice:5.0.1'
+
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+
+    implementation 'io.github.resilience4j:resilience4j-retry:1.7.0'
+
+    implementation 'io.github.resilience4j:resilience4j-okhttp:1.7.0'
+
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.3'
+
+    implementation 'com.h2database:h2:1.4.200'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+kotlin {
+    jvmToolchain(11)
+}
+
+application {
+    mainClassName = 'MainKt'
+}
