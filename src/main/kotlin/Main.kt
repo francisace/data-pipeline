@@ -3,6 +3,8 @@ import com.acme.db.business.entity.App
 import com.acme.db.business.entity.Org
 import com.acme.db.business.entity.OrgApp
 import com.acme.db.sync.entity.IntegrationSync
+import com.acme.db.ticketing.dao.ConversationDao
+import com.acme.db.ticketing.dao.TicketDao
 import com.acme.db.util.withSession
 import com.acme.kafka.consumer.IntegrationApiConsumer
 import com.acme.kafka.consumer.IntegrationDbWriterConsumer
@@ -26,6 +28,8 @@ import org.hibernate.boot.MetadataSources
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder
 import org.hibernate.service.ServiceRegistry
 import java.sql.DatabaseMetaData
+import java.util.concurrent.Executors
+import kotlin.system.exitProcess
 
 fun initDb(): Pair<UUID, UUID> {
     // Create org for Acme
@@ -105,8 +109,10 @@ fun runSyncWithKafka(orgId: UUID, appId: UUID) {
     val dbWriterConsumer = IntegrationDbWriterConsumer(kafkaDbWriterConsumer)
 
     // Start the consumers in separate threads
-    Thread(apiConsumer).start()
-    Thread(dbWriterConsumer).start()
+    val executor = Executors.newFixedThreadPool(2)
+
+    executor.submit(apiConsumer)
+    executor.submit(dbWriterConsumer)
 
     // Create a brand new sync and send it over to api-request
     val integrationSyncId = withSession { session ->
@@ -137,8 +143,22 @@ fun runSyncWithKafka(orgId: UUID, appId: UUID) {
         }
     }
 
+    Thread.sleep(5000)
+
+    TicketDao.findAll().forEach {
+        println(it)
+    }
+
+    ConversationDao.findAll().forEach {
+        println(it)
+    }
+
     // Don't forget to stop the cluster at the end
-    // cluster.stop()
+    executor.shutdownNow()
+    cluster.stop()
+
+    // This is just to exit the program
+    exitProcess(0)
 }
 
 fun debugTables() {
