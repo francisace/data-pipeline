@@ -12,7 +12,7 @@ import javax.persistence.Table
  * the state of the api call
  */
 @Entity
-@Table(name = "sync")
+@Table(name = "api_call")
 data class ApiCall (
     @Id
     val id: UUID,

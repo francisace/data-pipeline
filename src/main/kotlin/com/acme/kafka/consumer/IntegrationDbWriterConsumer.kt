@@ -2,8 +2,7 @@ package com.acme.kafka.consumer
 
 import com.acme.db.sync.dao.ApiCallDao
 import com.acme.db.sync.dao.DataLoadDao
-import com.acme.db.sync.dao.SyncDao
-import com.acme.db.sync.entity.ApiCall
+import com.acme.db.sync.dao.IntegrationSyncDao
 import com.acme.db.sync.entity.DataLoad
 import com.acme.db.util.withSession
 import com.acme.integration.ticketing.TicketingSystemDbWriter
@@ -18,14 +17,16 @@ import java.util.UUID
  * This consumer is responsible for converting downloaded data and then translating it into DB object
  * and serialize the data. It also updates
  */
-class IntegrationDbWriterConsumer(val consumer: KafkaConsumer<String, UUID>) : Runnable {
+class IntegrationDbWriterConsumer(private val consumer: KafkaConsumer<String, UUID>) : Runnable {
     override fun run() {
         while (true) {
             val records = consumer.poll(Duration.ofMillis(100))
 
             for (record in records) {
                 val apiCallId = record.value()
-                val apiCall = ApiCallDao.findValidApiCall(apiCallId) ?: throw Exception("This record should exist")
+                println("Received syncId $apiCallId, processing")
+
+                val apiCall = ApiCallDao.find(apiCallId) ?: throw Exception("This record should exist")
                 apiCall.fileLocation ?: throw Exception("File path is missing")
 
                 // I am hard coding this here, this should be dynamically loaded
@@ -49,7 +50,7 @@ class IntegrationDbWriterConsumer(val consumer: KafkaConsumer<String, UUID>) : R
 
                 // We want to mark the top level sync to be completed while updating the nested
                 withSession { session ->
-                    SyncDao.updateComplete(session, apiCall.syncId, totalCount)
+                    IntegrationSyncDao.updateComplete(session, apiCall.syncId, totalCount)
                     DataLoadDao.updateComplete(session, dataLoadId)
                 }
             }

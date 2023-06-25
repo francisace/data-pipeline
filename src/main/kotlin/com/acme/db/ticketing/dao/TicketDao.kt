@@ -7,7 +7,7 @@ import java.util.*
 object TicketDao {
     fun upsert(session: Session, vendorId: String, ticket: Ticket): UUID {
         val existingVendorTicket = session.createQuery("from Ticket where vendorId = :vendorId")
-            .setParameter("vendorId", vendorId).setMaxResults(1).uniqueResult() as Ticket
+            .setParameter("vendorId", vendorId).setMaxResults(1).uniqueResult() as? Ticket
 
         if (existingVendorTicket != null) {
             session.update(ticket.copy(id = existingVendorTicket.id))

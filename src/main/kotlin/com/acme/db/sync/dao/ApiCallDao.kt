@@ -5,14 +5,9 @@ import com.acme.db.util.withSession
 import java.util.UUID
 
 object ApiCallDao {
-    fun findValidApiCall(syncId: UUID) : ApiCall? {
+    fun find(id: UUID): ApiCall? {
         return withSession { session ->
-            session.createQuery(
-                "from ApiCall where syncId = :syncId and status = 1",
-                ApiCall::class.java
-            ).setParameter("syncId", syncId)
-                .setMaxResults(1)
-                .uniqueResult()
+            session.find(ApiCall::class.java, id)
         }
     }
 

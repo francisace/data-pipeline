@@ -7,12 +7,12 @@ import java.util.UUID
 
 object ConversationDao {
     fun upsert(session: Session, vendorId: String, conversation: Conversation): UUID {
-        val existingVendorTicket = session.createQuery("from Conversation where vendorId = :vendorId")
-            .setParameter("vendorId", vendorId).setMaxResults(1).uniqueResult() as Ticket
+        val existingConversation = session.createQuery("from Conversation where vendorId = :vendorId")
+            .setParameter("vendorId", vendorId).setMaxResults(1).uniqueResult() as? Conversation
 
-        if (existingVendorTicket != null) {
-            session.update(conversation.copy(id = existingVendorTicket.id))
-            return existingVendorTicket.id
+        if (existingConversation != null) {
+            session.update(conversation.copy(id = existingConversation.id))
+            return existingConversation.id
         }
         session.save(conversation)
         return conversation.id

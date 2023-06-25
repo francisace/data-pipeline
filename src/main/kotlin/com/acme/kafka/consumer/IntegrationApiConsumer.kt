@@ -54,12 +54,15 @@ class IntegrationApiConsumer(private val consumer: KafkaConsumer<String, UUID>, 
     }
 
     override fun run() {
+
+
         while (true) {
             val records = consumer.poll(Duration.ofMillis(100))
 
             for (record in records) {
                 val syncId = record.value() ?: continue // this is really an error condition
 
+                println("Received syncId $syncId, processing")
                 // I am just going to hard code this here, the actual api class should be create dynamically depending
                 // on the type of app so that this code can remain generic
                 val apiCaller = IntercomTicketingSystemApi()
@@ -80,11 +83,13 @@ class IntegrationApiConsumer(private val consumer: KafkaConsumer<String, UUID>, 
 
                 while (retries < MAX_RETRIES) {
                     try {
-                        val filePath = writeResponseToFile(syncId, apiCaller.callApi() as InputStream)
+                        val filePath = writeResponseToFile(syncId, apiCaller.callApi().entity as InputStream)
                         // Now update the file location
                         ApiCallDao.updateComplete(apiDbEntryId, filePath)
                         toNext(syncId, apiDbEntryId)
+                        break
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         // We can perform exponential backoff here
                         // This can be configured by separate apps, but I am putting it here
                         Thread.sleep(backOffTime)

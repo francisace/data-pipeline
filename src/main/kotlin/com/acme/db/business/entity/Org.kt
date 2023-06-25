@@ -7,7 +7,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "app")
+@Table(name = "org")
 data class Org (
     @Id
     val id: UUID,

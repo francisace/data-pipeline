@@ -12,8 +12,8 @@ import javax.persistence.Table
  * will hold state of the api call, transformation and loading to the database.
  */
 @Entity
-@Table(name = "sync")
-data class Sync (
+@Table(name = "integration_sync")
+data class IntegrationSync (
     @Id
     val id: UUID,
 
@@ -27,7 +27,7 @@ data class Sync (
     val startTime: LocalDateTime,
 
     @Column(name = "end_time")
-    val endTime: LocalDateTime,
+    val endTime: LocalDateTime?,
 
     @Column(name = "status")
     val status: Int,

@@ -1,8 +1,5 @@
 package com.acme.db.sync.dao
 
-import com.acme.db.sync.entity.ApiCall
-import com.acme.db.sync.entity.Sync
-import com.acme.db.util.withSession
 import org.hibernate.Session
 import java.time.LocalDateTime
 import java.util.UUID
